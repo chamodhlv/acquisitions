@@ -46,7 +46,7 @@ export const createUser = async (name, email, password, role = 'user') => {
     logger.info({ message: `User ${newUser.email} created successfully` });
     return newUser;
   } catch (error) {
-    logger.error(`Error creating user: ${error}`);
-    throw new Error('Error creating user');
+    console.error('FULL ERROR:', error);
+    throw error;
   }
 };
