@@ -68,3 +68,6 @@
 {"level":"info","message":"::1 - - [20/Jul/2026:22:31:03 +0000] \"GET /health HTTP/1.1\" 200 74 \"-\" \"HTTPie\"","service":"acquisitions-api","timestamp":"2026-07-21 04:01:03"}
 {"ip":"::1","level":"warn","message":"Rate limit, request blocked","path":"/health","service":"acquisitions-api","timestamp":"2026-07-21 04:01:03","userAgent":"HTTPie"}
 {"ip":"::1","level":"warn","message":"Rate limit, request blocked","path":"/health","service":"acquisitions-api","timestamp":"2026-07-21 04:01:03","userAgent":"HTTPie"}
+{"level":"info","message":"Hello, from Acquisitions Acquisitions","service":"acquisitions-api","timestamp":"2026-07-21 22:28:39"}
+{"level":"info","message":"::1 - - [21/Jul/2026:16:58:39 +0000] \"GET / HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"","service":"acquisitions-api","timestamp":"2026-07-21 22:28:39"}
+{"level":"info","message":"::1 - - [21/Jul/2026:16:58:39 +0000] \"GET /favicon.ico HTTP/1.1\" 404 150 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"","service":"acquisitions-api","timestamp":"2026-07-21 22:28:39"}
