@@ -14,13 +14,16 @@
   },
   "scripts": {
     "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:stub": "drizzle-kit studio"
+    "db:stub": "drizzle-kit studio",
+    "dev:docker": "docker compose -f docker-compose.dev.yml --env-file .env.development up --build",
+    "prod:docker": "sh ./scripts/prod.sh"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +31,8 @@
   "description": "",
   "type": "module",
   "dependencies": {
+    "@arcjet/inspect": "^1.5.0",
+    "@arcjet/node": "^1.5.0",
     "@neondatabase/serverless": "^1.1.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",

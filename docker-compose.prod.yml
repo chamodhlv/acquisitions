@@ -1,0 +1,50 @@
+# =============================================================================
+# docker-compose.prod.yml  –  Production stack using Neon Cloud directly
+# =============================================================================
+#
+# Usage:
+#   docker compose -f docker-compose.prod.yml --env-file .env.production up --build -d
+#
+# What happens:
+#   1. Only the "app" service runs — NO Neon Local proxy.
+#   2. DATABASE_URL from .env.production points directly to your Neon Cloud
+#      serverless database (e.g., ep-*.neon.tech).
+#   3. The app container is built using the lean "production" stage (no devDeps).
+#   4. Secrets are injected via environment variables only — nothing is hardcoded.
+# =============================================================================
+
+services:
+
+  # ─── Application (production build) ───────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production       # Lean image: only production dependencies
+    image: acquisitions:latest
+    container_name: acquisitions_app_prod
+    restart: always
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - .env.production        # DATABASE_URL points directly to Neon Cloud
+    environment:
+      NODE_ENV: production
+    # No source-code bind mounts in production — use the baked image
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - acquisitions_prod
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  acquisitions_prod:
+    driver: bridge

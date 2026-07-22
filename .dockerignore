@@ -1,0 +1,29 @@
+# Dependencies (reinstalled inside the container)
+node_modules/
+
+# Environment files (injected at runtime via --env-file, never baked into images)
+.env
+.env.*
+!.env.example
+
+# Git history and metadata
+.git/
+.gitignore
+.neon_local/
+
+# Logs
+logs/
+*.log
+
+# Dev tooling configs (not needed at runtime)
+.prettierrc
+.prettierignore
+eslint.config.js
+
+# Docker files themselves
+Dockerfile
+docker-compose*.yml
+
+# OS artifacts
+.DS_Store
+Thumbs.db

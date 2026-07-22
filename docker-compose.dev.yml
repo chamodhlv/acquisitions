@@ -1,0 +1,74 @@
+# =============================================================================
+# docker-compose.dev.yml  –  Development stack with Neon Local proxy
+# =============================================================================
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yml --env-file .env.development up --build
+#
+# What happens:
+#   1. "neon-local" container starts → authenticates with Neon Cloud using
+#      your NEON_API_KEY & NEON_PROJECT_ID, creates an ephemeral branch
+#      derived from PARENT_BRANCH_ID, and exposes it on port 5432 inside
+#      the "acquisitions_dev" network.
+#   2. "app" waits for the neon-local health check, then starts with hot-reload.
+#   3. Your DATABASE_URL points at "neon-local:5432" — no cloud URL needed
+#      in the app config.
+#   4. When you run `docker compose down`, the ephemeral branch is automatically
+#      deleted from Neon Cloud.
+# =============================================================================
+
+services:
+
+  # ─── Neon Local proxy ─────────────────────────────────────────────────────
+  neon-local:
+    image: neondatabase/neon_local:latest
+    container_name: acquisitions_neon_local
+    restart: unless-stopped
+    ports:
+      - "5432:5432"          # Exposed on host for direct psql/drizzle-studio access
+    env_file:
+      - .env.development
+    environment:
+      NEON_API_KEY:       ${NEON_API_KEY}
+      NEON_PROJECT_ID:    ${NEON_PROJECT_ID}
+      # PARENT_BRANCH_ID → creates an ephemeral branch on every compose-up.
+      # Remove this and use BRANCH_ID instead to connect to a fixed branch.
+      PARENT_BRANCH_ID:   ${PARENT_BRANCH_ID}
+      # Set DELETE_BRANCH=false to keep the branch alive after container stops
+      DELETE_BRANCH:      ${DELETE_BRANCH:-true}
+    networks:
+      - acquisitions_dev
+
+  # ─── Application ──────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development      # Uses the "development" stage (includes devDeps + --watch)
+    container_name: acquisitions_app_dev
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - .env.development       # Loads all dev vars; DATABASE_URL points to neon-local
+    environment:
+      # Neon Serverless driver in Docker Compose mode needs to use HTTP,
+      # not WebSockets, to talk to Neon Local.
+      # These are read by src/config/database.js when NODE_ENV=development.
+      NEON_LOCAL_HOST: neon-local
+      NEON_LOCAL_PORT: 5432
+    volumes:
+      # Mount source code so --watch picks up changes without rebuilding
+      - ./src:/app/src:delegated
+      - ./drizzle:/app/drizzle:delegated
+      - ./drizzle.config.js:/app/drizzle.config.js:delegated
+      # Avoid overwriting container's node_modules with host's
+      - /app/node_modules
+    depends_on:
+      - neon-local
+    networks:
+      - acquisitions_dev
+
+networks:
+  acquisitions_dev:
+    driver: bridge
