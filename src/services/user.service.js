@@ -22,7 +22,7 @@ export const getAllUsers = async () => {
   }
 };
 
-export const getUserById = async (id) => {
+export const getUserById = async id => {
   try {
     const [user] = await db
       .select({
@@ -36,7 +36,7 @@ export const getUserById = async (id) => {
       .from(users)
       .where(eq(users.id, id))
       .limit(1);
-    
+
     return user;
   } catch (error) {
     logger.error(`Error occurred while fetching user by id ${id}`, error);
@@ -75,7 +75,7 @@ export const updateUser = async (id, updates) => {
   }
 };
 
-export const deleteUser = async (id) => {
+export const deleteUser = async id => {
   try {
     const existingUser = await getUserById(id);
     if (!existingUser) {

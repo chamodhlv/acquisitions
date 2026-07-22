@@ -14,25 +14,24 @@
 # =============================================================================
 
 services:
-
   # ─── Application (production build) ───────────────────────────────────────
   app:
     build:
       context: .
       dockerfile: Dockerfile
-      target: production       # Lean image: only production dependencies
+      target: production # Lean image: only production dependencies
     image: acquisitions:latest
     container_name: acquisitions_app_prod
     restart: always
     ports:
-      - "${PORT:-3000}:3000"
+      - '${PORT:-3000}:3000'
     env_file:
-      - .env.production        # DATABASE_URL points directly to Neon Cloud
+      - .env.production # DATABASE_URL points directly to Neon Cloud
     environment:
       NODE_ENV: production
     # No source-code bind mounts in production — use the baked image
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/health || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -40,10 +39,10 @@ services:
     networks:
       - acquisitions_prod
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: '10m'
+        max-file: '3'
 
 networks:
   acquisitions_prod:

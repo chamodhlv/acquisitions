@@ -58,26 +58,26 @@
 
 ## Prerequisites
 
-| Tool | Version | Notes |
-|------|---------|-------|
-| Docker Desktop | ≥ 4.x | With Docker Compose v2 built-in |
-| Node.js | ≥ 22 | Only for running outside Docker |
-| A [Neon account](https://console.neon.tech) | Free tier works | |
+| Tool                                        | Version         | Notes                           |
+| ------------------------------------------- | --------------- | ------------------------------- |
+| Docker Desktop                              | ≥ 4.x           | With Docker Compose v2 built-in |
+| Node.js                                     | ≥ 22            | Only for running outside Docker |
+| A [Neon account](https://console.neon.tech) | Free tier works |                                 |
 
 ---
 
 ## Project Files Created
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile` | Multi-stage build: `development` (hot-reload) and `production` (lean) |
-| `docker-compose.dev.yml` | Dev stack: Neon Local proxy + app with live reload |
-| `docker-compose.prod.yml` | Prod stack: app only, direct Neon Cloud connection |
-| `.env.development` | Dev environment variables (git-ignored) |
-| `.env.production` | Production environment variables (git-ignored) |
-| `.env.example` | Safe template to commit — no secrets |
-| `.dockerignore` | Keeps images lean & secrets out of build context |
-| `src/config/database.js` | Auto-detects dev vs. prod and configures Neon driver |
+| File                      | Purpose                                                               |
+| ------------------------- | --------------------------------------------------------------------- |
+| `Dockerfile`              | Multi-stage build: `development` (hot-reload) and `production` (lean) |
+| `docker-compose.dev.yml`  | Dev stack: Neon Local proxy + app with live reload                    |
+| `docker-compose.prod.yml` | Prod stack: app only, direct Neon Cloud connection                    |
+| `.env.development`        | Dev environment variables (git-ignored)                               |
+| `.env.production`         | Production environment variables (git-ignored)                        |
+| `.env.example`            | Safe template to commit — no secrets                                  |
+| `.dockerignore`           | Keeps images lean & secrets out of build context                      |
+| `src/config/database.js`  | Auto-detects dev vs. prod and configures Neon driver                  |
 
 ---
 
@@ -123,6 +123,7 @@ docker compose -f docker-compose.dev.yml --env-file .env.development up --build
 ```
 
 **What happens:**
+
 1. `neon-local` container starts → authenticates with Neon API → creates a fresh ephemeral branch based on `PARENT_BRANCH_ID`
 2. `app` waits for `neon-local` to pass its health check (up to 15s for branch creation)
 3. App starts with `node --watch` (hot-reload on file changes)
@@ -191,17 +192,20 @@ docker compose -f docker-compose.prod.yml --env-file .env.production up --build 
 ```
 
 **What's different from dev:**
+
 - Only the `app` service runs — no Neon Local proxy
 - Built using the lean `production` Dockerfile stage (no `devDependencies`)
 - Source code is **not** mounted — it's baked into the image
 - `NODE_ENV=production` — no hot-reload, full performance
 
 **View logs:**
+
 ```bash
 docker compose -f docker-compose.prod.yml logs -f app
 ```
 
 **Stop:**
+
 ```bash
 docker compose -f docker-compose.prod.yml down
 ```
@@ -210,21 +214,21 @@ docker compose -f docker-compose.prod.yml down
 
 ## Environment Variable Reference
 
-| Variable | Dev | Prod | Description |
-|----------|-----|------|-------------|
-| `PORT` | `3000` | `3000` | HTTP port the app listens on |
-| `NODE_ENV` | `development` | `production` | Controls app behavior & logging |
-| `LOG_LEVEL` | `debug` | `info` | Winston log level |
-| `DATABASE_URL` | `postgres://neon:npg@neon-local:5432/neondb` | `postgres://...neon.tech/...?sslmode=require` | Postgres connection string |
-| `NEON_API_KEY` | ✅ Required | ❌ Not needed | Neon API key (for neon-local container) |
-| `NEON_PROJECT_ID` | ✅ Required | ❌ Not needed | Neon project ID (for neon-local container) |
-| `PARENT_BRANCH_ID` | ✅ Required\* | ❌ Not needed | Creates ephemeral branch from this parent |
-| `BRANCH_ID` | Optional\* | ❌ Not needed | Connect to a specific existing branch |
-| `DELETE_BRANCH` | `true` | ❌ Not needed | Set `false` to persist branch after `down` |
-| `JWT_SECRET` | ✅ Required | ✅ Required | JWT signing secret |
-| `ARCJET_KEY` | ✅ Required | ✅ Required | Arcjet rate-limiting key |
-| `NEON_LOCAL_HOST` | Set by compose | ❌ Not set | Triggers HTTP mode in `database.js` |
-| `NEON_LOCAL_PORT` | `5432` | ❌ Not set | Port of neon-local within compose network |
+| Variable           | Dev                                          | Prod                                          | Description                                |
+| ------------------ | -------------------------------------------- | --------------------------------------------- | ------------------------------------------ |
+| `PORT`             | `3000`                                       | `3000`                                        | HTTP port the app listens on               |
+| `NODE_ENV`         | `development`                                | `production`                                  | Controls app behavior & logging            |
+| `LOG_LEVEL`        | `debug`                                      | `info`                                        | Winston log level                          |
+| `DATABASE_URL`     | `postgres://neon:npg@neon-local:5432/neondb` | `postgres://...neon.tech/...?sslmode=require` | Postgres connection string                 |
+| `NEON_API_KEY`     | ✅ Required                                  | ❌ Not needed                                 | Neon API key (for neon-local container)    |
+| `NEON_PROJECT_ID`  | ✅ Required                                  | ❌ Not needed                                 | Neon project ID (for neon-local container) |
+| `PARENT_BRANCH_ID` | ✅ Required\*                                | ❌ Not needed                                 | Creates ephemeral branch from this parent  |
+| `BRANCH_ID`        | Optional\*                                   | ❌ Not needed                                 | Connect to a specific existing branch      |
+| `DELETE_BRANCH`    | `true`                                       | ❌ Not needed                                 | Set `false` to persist branch after `down` |
+| `JWT_SECRET`       | ✅ Required                                  | ✅ Required                                   | JWT signing secret                         |
+| `ARCJET_KEY`       | ✅ Required                                  | ✅ Required                                   | Arcjet rate-limiting key                   |
+| `NEON_LOCAL_HOST`  | Set by compose                               | ❌ Not set                                    | Triggers HTTP mode in `database.js`        |
+| `NEON_LOCAL_PORT`  | `5432`                                       | ❌ Not set                                    | Port of neon-local within compose network  |
 
 \* Use either `PARENT_BRANCH_ID` **or** `BRANCH_ID`, not both.
 

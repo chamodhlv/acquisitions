@@ -9,7 +9,7 @@ export const hashPassword = async password => {
     return await bcrypt.hash(password, 10);
   } catch (error) {
     logger.error(`Error hashing password: ${error}`);
-    throw new Error('Error hashing password');
+    throw new Error('Error hashing password', { cause: error });
   }
 };
 
@@ -18,7 +18,7 @@ export const comparePassword = async (password, hashedPassword) => {
     return await bcrypt.compare(password, hashedPassword);
   } catch (error) {
     logger.error(`Error comparing password: ${error}`);
-    throw new Error('Error comparing password');
+    throw new Error('Error comparing password', { cause: error });
   }
 };
 
@@ -33,7 +33,10 @@ export const authenticateUser = async (email, password) => {
     throw new Error('User not found');
   }
 
-  const isPasswordValid = await comparePassword(password, existingUser.password);
+  const isPasswordValid = await comparePassword(
+    password,
+    existingUser.password
+  );
 
   if (!isPasswordValid) {
     throw new Error('Invalid credentials');
