@@ -10,7 +10,7 @@ export const jwttoken = {
       return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
     } catch (error) {
       logger.error(`Error generating JWT token: ${error}`);
-      throw new Error('Error generating JWT token');
+      throw new Error('Error generating JWT token', { cause: error });
     }
   },
   verify: token => {
@@ -18,7 +18,7 @@ export const jwttoken = {
       return jwt.verify(token, JWT_SECRET);
     } catch (error) {
       logger.error(`Invalid or expired JWT token: ${error}`);
-      throw new Error('Invalid or expired JWT token');
+      throw new Error('Invalid or expired JWT token', { cause: error });
     }
   },
 };

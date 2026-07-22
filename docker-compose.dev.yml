@@ -18,24 +18,23 @@
 # =============================================================================
 
 services:
-
   # ─── Neon Local proxy ─────────────────────────────────────────────────────
   neon-local:
     image: neondatabase/neon_local:latest
     container_name: acquisitions_neon_local
     restart: unless-stopped
     ports:
-      - "5432:5432"          # Exposed on host for direct psql/drizzle-studio access
+      - '5432:5432' # Exposed on host for direct psql/drizzle-studio access
     env_file:
       - .env.development
     environment:
-      NEON_API_KEY:       ${NEON_API_KEY}
-      NEON_PROJECT_ID:    ${NEON_PROJECT_ID}
+      NEON_API_KEY: ${NEON_API_KEY}
+      NEON_PROJECT_ID: ${NEON_PROJECT_ID}
       # PARENT_BRANCH_ID → creates an ephemeral branch on every compose-up.
       # Remove this and use BRANCH_ID instead to connect to a fixed branch.
-      PARENT_BRANCH_ID:   ${PARENT_BRANCH_ID}
+      PARENT_BRANCH_ID: ${PARENT_BRANCH_ID}
       # Set DELETE_BRANCH=false to keep the branch alive after container stops
-      DELETE_BRANCH:      ${DELETE_BRANCH:-true}
+      DELETE_BRANCH: ${DELETE_BRANCH:-true}
     networks:
       - acquisitions_dev
 
@@ -44,13 +43,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: development      # Uses the "development" stage (includes devDeps + --watch)
+      target: development # Uses the "development" stage (includes devDeps + --watch)
     container_name: acquisitions_app_dev
     restart: unless-stopped
     ports:
-      - "${PORT:-3000}:3000"
+      - '${PORT:-3000}:3000'
     env_file:
-      - .env.development       # Loads all dev vars; DATABASE_URL points to neon-local
+      - .env.development # Loads all dev vars; DATABASE_URL points to neon-local
     environment:
       # Neon Serverless driver in Docker Compose mode needs to use HTTP,
       # not WebSockets, to talk to Neon Local.

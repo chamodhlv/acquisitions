@@ -2,9 +2,7 @@ name: Lint and Format
 
 on:
   push:
-    branches: [ "main", "staging" ]
-  pull_request:
-    branches: [ "main", "staging" ]
+    branches: ['main']
 
 jobs:
   lint-and-format:

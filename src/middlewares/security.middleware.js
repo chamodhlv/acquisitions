@@ -37,7 +37,7 @@ const securityMiddleware = async (req, res, next) => {
     const decision = await client.protect(req);
 
     if (decision.isDenied() && decision.reason.isBot()) {
-      logger.warn(`Bot request blocked`, {
+      logger.warn('Bot request blocked', {
         ip: req.ip,
         userAgent: req.get('User-Agent'),
         path: req.path,
@@ -47,7 +47,7 @@ const securityMiddleware = async (req, res, next) => {
     }
 
     if (decision.isDenied() && decision.reason.isShield()) {
-      logger.warn(`Shield request blocked`, {
+      logger.warn('Shield request blocked', {
         ip: req.ip,
         userAgent: req.get('User-Agent'),
         path: req.path,
@@ -58,7 +58,7 @@ const securityMiddleware = async (req, res, next) => {
     }
 
     if (decision.isDenied() && decision.reason.isRateLimit()) {
-      logger.warn(`Rate limit, request blocked`, {
+      logger.warn('Rate limit, request blocked', {
         ip: req.ip,
         userAgent: req.get('User-Agent'),
         path: req.path,
