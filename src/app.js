@@ -43,4 +43,8 @@ app.get('/api', (req, res) => {
   res.status(200).json({ message: 'Acquisitions API is Running' });
 });
 
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not Found' });
+});
+
 export default app;
