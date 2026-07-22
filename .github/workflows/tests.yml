@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "main", "staging" ]
+  pull_request:
+    branches: [ "main", "staging" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          NODE_OPTIONS: --experimental-vm-modules
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+
+      - name: Annotate test failure
+        if: failure()
+        run: |
+          echo "::error title=Tests Failed::One or more tests failed. Please review the logs for details."
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+      - name: Generate Step Summary
+        if: always()
+        run: |
+          echo "### Test Execution Completed 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "The tests have been executed. Check the uploaded artifacts for detailed coverage reports." >> $GITHUB_STEP_SUMMARY
